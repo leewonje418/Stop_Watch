@@ -48,27 +48,34 @@
     </div>
     <ul class="laps"></ul>
 
-    <script type="text/javascript">
+    <script>
         var ms = 0, s = 0, m = 0;
         var timer;
-        var laps = false;
-        var average, max, min;
+        var laps = 0;
+        var avg = 0;
+        var avgM = 0, avgS = 0, avgMs = 0;
+        var maxM = 0, maxS = 0, maxMs = 0;
+        var minM = 0, minS = 0, minMs = 0;
         var stopwatchEl = document.querySelector('.stopwatch');
         var lapsContainer = document.querySelector('.laps');
 
         function startAndStop() {
-            console.log(laps);
-            if(laps == true) {
-                clearInterval(timer);
-                document.getElementById("start").innerText = "Start";
-                 
-                timer = false;
-                laps = false;
-            }
             if(!timer) {
                 document.getElementById("start").innerText = "Stop";
                 timer = setInterval(run, 10);
             } else if(timer) {
+                if(laps != 0) {
+                    var rearAvg = avg / laps
+                    console.log('AA');
+                    avgM = parseInt(rearAvg / 6000);
+                    rearAvg -= 6000 * avgM;
+                    avgS = parseInt(rearAvg / 100);
+                    rearAvg -= avgS * 100;
+                    avgMs = parseInt(rearAvg);
+                    document.getElementById("average").innerText = `평균 기록 : ${avgM}:${avgS}:${avgMs}`;
+                    document.getElementById("max").innerText = `최대 기록 : ${maxM}:${maxS}:${maxMs}`;
+                    document.getElementById("min").innerText = `최소 기록 : ${minM}:${minS}:${minMs}`;
+                }
                 document.getElementById("start").innerText = "Start";
                 clearInterval(timer);
                 timer=false;
@@ -111,8 +118,21 @@
 
         function lap() {
             if(timer) {
+                laps++;
                 var code = getTimer();
                 var li = document.createElement('li');
+                var toMs = (code[0] * 60 * 100) + (code[1] * 100) + code[2];
+                if(laps == 1) {
+                    minM = code[0];
+                    minS = code[1];
+                    minMs = code[2];
+                } 
+                if(laps != 0) {
+                    maxM = code[0];
+                    maxS = code[1];
+                    maxMs = code[2];
+                }
+                avg += toMs;
                 li.innerText = `${code[0]}:${code[1]}:${code[2]}`;
                 lapsContainer.appendChild(li);
             } else {
