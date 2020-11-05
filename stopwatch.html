@@ -81,16 +81,16 @@
                 timer=false;
             }
         }
-        function keyup(){
-            document.addEventListener('keydown', function(e){
-                const keyCode = e.keyCode;
-                if(keyCode == 37){ // Left key
-                    startAndStop()
-                } else if(keyCode == 39){ // Right key
-                    lap()
-                }
-            })
-        }
+        // function keyup(){
+        //     document.addEventListener('keydown', function(e){
+        //         const keyCode = e.keyCode;
+        //         if(keyCode == 37){ // Left key
+        //             startAndStop()
+        //         } else if(keyCode == 39){ // Right key
+        //             lap()
+        //         }
+        //     })
+        // }
 
         function run() {
             var code = getTimer();
