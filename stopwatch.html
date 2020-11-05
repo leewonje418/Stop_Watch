@@ -6,8 +6,8 @@
     <title>StopWatch</title>
     <style type="text/css">
         body{
-            background: #2d2d2d;
-            color: #f6f6f6;
+            background: #000000;
+            color: #00D8FF;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -31,34 +31,63 @@
         }
     </style>
 </head>
-<body>
+<body onkeydown="keyup()">
     <div class="contols">
-        <button onclick="start()">Start</button>
-        <button onclick="pause()">Pause</button>
-        <button onclick="stop()">Stop</button>
-        <button onclick="restart()">Restart</button>
+        <button onclick="startAndStop()" id="start">Start</button>
         <button onclick="lap()">Lap</button>
-        <button onclick="resetLaps()">ResetLaps</button>
     </div>
  
     <div class="stopwatch">00:00:00</div>
+    <div>
+        <div id="average">
+        </div>    
+        <div id="max">
+        </div> 
+        <div id="min">
+        </div>    
+    </div>
     <ul class="laps"></ul>
 
     <script type="text/javascript">
         var ms = 0, s = 0, m = 0;
         var timer;
-
+        var laps = false;
+        var average, max, min;
         var stopwatchEl = document.querySelector('.stopwatch');
         var lapsContainer = document.querySelector('.laps');
 
-        function start() {
-            if(!timer) {
-                timer = setInterval(run, 10);
+        function startAndStop() {
+            console.log(laps);
+            if(laps == true) {
+                clearInterval(timer);
+                document.getElementById("start").innerText = "Start";
+                 
+                timer = false;
+                laps = false;
             }
+            if(!timer) {
+                document.getElementById("start").innerText = "Stop";
+                timer = setInterval(run, 10);
+            } else if(timer) {
+                document.getElementById("start").innerText = "Start";
+                clearInterval(timer);
+                timer=false;
+            }
+        }
+        function keyup(){
+            document.addEventListener('keydown', function(e){
+                const keyCode = e.keyCode;
+                if(keyCode == 37){ // Left key
+                    startAndStop()
+                } else if(keyCode == 39){ // Right key
+                    lap()
+                }
+            })
         }
 
         function run() {
-            stopwatchEl.textContent = getTimer();
+            var code = getTimer();
+            stopwatchEl.textContent = `${code[0]}:${code[1]}:${code[2]}`;
             ms++;
             if(ms == 100) {
                 ms = 0;
@@ -69,41 +98,32 @@
                 m++;
             }
         }
-        function pause() {
-            clearInterval(timer);
-            timer=false;
-        }
-        function stop() {
-            stopTimer();
-            m = 0;
-            s = 0;
-            ms = 0;
-            stopwatchEl.textContent =  getTimer();
-        }
 
-        function stopTimer() {
+        function resetTimer() {
             clearInterval(timer);
             timer = false;
         }
 
         function getTimer() {
-            return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s) + ':' + (ms < 10 ? '0' + ms : ms);
-        }
-
-        function restart() {
-            stop();
-            start();
+            // return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s) + ':' + (ms < 10 ? '0' + ms : ms);
+            return [m < 10 ? '0' + m : m, s < 10 ? '0' + s : s, ms < 10 ? '0' + ms : ms];
         }
 
         function lap() {
             if(timer) {
+                var code = getTimer();
                 var li = document.createElement('li');
-                li.innerText = getTimer();
+                li.innerText = `${code[0]}:${code[1]}:${code[2]}`;
                 lapsContainer.appendChild(li);
+            } else {
+                resetTimer();
+                m = 0;
+                s = 0;
+                ms = 0;
+                var code = getTimer();
+                stopwatchEl.textContent = `${code[0]}:${code[1]}:${code[2]}`;
+                lapsContainer.innerHTML = '';
             }
-        }
-        function resetLaps() {
-            lapsContainer.innerHTML = '';
         }
     </script>
 </body>
